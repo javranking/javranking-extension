@@ -4,6 +4,8 @@
 
 The JavRanking browser extension identifies video codes on the active page after you click its browser toolbar icon, then shows matching JavRanking ranking information.
 
+![screenshot](https://pub-46be2c0b616d4f749dab2ccd9deb9827.r2.dev/social-preview.png)
+
 ## Install in Chrome or Edge
 
 1. Download the Chromium ZIP from [GitHub Releases](https://github.com/aizhimou/javranking-extension/releases).

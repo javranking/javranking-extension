@@ -4,6 +4,8 @@
 
 JavRanking 瀏覽器擴充功能會在你主動點擊瀏覽器工具列圖示後，識別目前頁面中的影片番號，並顯示可對應的 JavRanking 榜單資料。
 
+![screenshot](https://pub-46be2c0b616d4f749dab2ccd9deb9827.r2.dev/social-preview.png)
+
 ## 安裝 Chrome 或 Edge 版本
 
 1. 從 [GitHub Releases](https://github.com/aizhimou/javranking-extension/releases) 下載 Chromium ZIP。

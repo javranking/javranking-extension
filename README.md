@@ -1,8 +1,10 @@
 # JavRanking 浏览器扩展
 
-[简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md)
+[English](README.en.md) · [繁體中文](README.zh-TW.md)
 
 JavRanking 浏览器扩展会在你主动点击浏览器工具栏图标后，识别当前页面中的影片番号，并展示可对应的 JavRanking 榜单资料。
+
+![screenshot](https://pub-46be2c0b616d4f749dab2ccd9deb9827.r2.dev/social-preview.png)
 
 ## 安装 Chrome 或 Edge 版本
 
