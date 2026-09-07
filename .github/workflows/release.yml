@@ -1,0 +1,30 @@
+name: Release extension
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run compile
+      - run: npm test
+      - run: npm run zip
+      - run: sha256sum .output/*.zip > SHA256SUMS.txt
+
+      - run: gh release create "$GITHUB_REF_NAME" .output/*.zip SHA256SUMS.txt --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
