@@ -15,6 +15,7 @@ import {
 	type LocaleOption,
 } from "../../../src/lib/settings";
 import type { SupportedLocale } from "../../../src/lib/types";
+import { EXTENSION_VERSION } from "../../../src/lib/release";
 
 interface SettingsViewProps {
 	t: LocaleMessages;
@@ -151,6 +152,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 			</div>
 
 			<p className="settings-view__desc">{t.settingsDesc}</p>
+			<section className="settings-version" aria-labelledby="extension-version-label">
+				<span id="extension-version-label" className="settings-version__label">
+					{t.extensionVersionLabel}
+				</span>
+				<code className="settings-version__value">v{EXTENSION_VERSION}</code>
+			</section>
 
 			<form className="settings-view__form" onSubmit={handleSave}>
 				<div className="settings-field">

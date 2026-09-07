@@ -3,6 +3,7 @@ import { detectLocale, messages } from "../../src/lib/locales";
 import type { SupportedLocale } from "../../src/lib/types";
 import { buildJavRankingUrl } from "../../src/lib/url";
 import { SettingsView } from "../sidepanel/components/SettingsView";
+import { UpdateNotice } from "../shared/UpdateNotice";
 
 export const App: React.FC = () => {
 	const [locale] = useState<SupportedLocale>(detectLocale());
@@ -33,6 +34,7 @@ export const App: React.FC = () => {
 					javranking.top
 				</a>
 			</header>
+			<UpdateNotice t={t} />
 
 			<main className="popup-main">
 				<SettingsView

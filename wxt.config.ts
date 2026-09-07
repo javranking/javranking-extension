@@ -1,11 +1,12 @@
 import { defineConfig } from "wxt";
+import { EXTENSION_VERSION } from "./src/lib/release";
 
 export default defineConfig({
   modules: ["@wxt-dev/module-react"],
   manifest: {
     name: "JavRanking",
     description: "JavRanking browser extension",
-    version: "0.1.0",
+    version: EXTENSION_VERSION,
     icons: {
       16: "icons/icon-16.png",
       32: "icons/icon-32.png",

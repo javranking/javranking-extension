@@ -164,6 +164,55 @@ button:focus-visible {
 	background-color: rgba(245, 158, 11, 0.15);
 	border-color: var(--accent-gold);
 }
+
+.popup-update-notice {
+	background-color: rgba(245, 158, 11, 0.12);
+	border-bottom: 1px solid rgba(245, 158, 11, 0.45);
+}
+
+.popup-update-notice__link {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 16px;
+	color: var(--text-primary);
+	text-decoration: none;
+	transition: background-color 0.15s ease;
+}
+
+.popup-update-notice__link:hover {
+	background-color: rgba(245, 158, 11, 0.18);
+}
+
+.popup-update-notice__icon {
+	width: 18px;
+	height: 18px;
+	flex: 0 0 auto;
+	color: var(--accent-gold-text);
+}
+
+.popup-update-notice__copy {
+	display: flex;
+	min-width: 0;
+	flex: 1;
+	flex-direction: column;
+	gap: 1px;
+	font-size: 12px;
+	line-height: 1.35;
+}
+
+.popup-update-notice__copy strong {
+	font-size: 13px;
+	color: var(--accent-gold-text);
+}
+
+.popup-update-notice__action {
+	flex: 0 0 auto;
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--accent-gold-text);
+	white-space: nowrap;
+}
 .icon-gear,
 .icon-refresh {
 	width: 16px;
@@ -938,6 +987,33 @@ button:focus-visible {
 	font-size: 12.5px;
 	color: var(--text-muted);
 	line-height: 1.5;
+}
+
+.settings-version {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 10px 12px;
+	background-color: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: 6px;
+}
+
+.settings-version__label {
+	font-size: 12.5px;
+	font-weight: 600;
+	color: var(--text-secondary);
+}
+
+.settings-version__value {
+	padding: 2px 6px;
+	background-color: var(--bg-surface-hover);
+	border-radius: 4px;
+	color: var(--accent-gold-text);
+	font-family: var(--font-mono);
+	font-size: 12px;
+	font-weight: 700;
 }
 
 .settings-view__form {

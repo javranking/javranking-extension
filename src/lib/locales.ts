@@ -64,6 +64,11 @@ export interface LocaleMessages {
 	customRegexDesc: string;
 	regexSyntaxError: string;
 	resetRegex: string;
+	extensionVersionLabel: string;
+	updateAvailableTitle: (version: string) => string;
+	updateAvailableDesc: string;
+	updateNow: string;
+	updateAvailableAria: (version: string) => string;
 }
 
 export const messages: Record<SupportedLocale, LocaleMessages> = {
@@ -137,6 +142,12 @@ export const messages: Record<SupportedLocale, LocaleMessages> = {
 			"自定义页面番号提取的核心正则表达式规则，保存后即时生效。",
 		regexSyntaxError: "正则表达式语法无效，请检查后重试",
 		resetRegex: "恢复默认正则",
+		extensionVersionLabel: "当前插件版本",
+		updateAvailableTitle: (version) => `发现新版本 v${version}`,
+		updateAvailableDesc: "前往 GitHub Release 下载更新。",
+		updateNow: "立即更新",
+		updateAvailableAria: (version) =>
+			`发现新版本 v${version}，在新标签页打开 GitHub 最新 Release`,
 	},
 	"zh-hant": {
 		title: "JavRanking 榜單助手",
@@ -208,6 +219,12 @@ export const messages: Record<SupportedLocale, LocaleMessages> = {
 			"自訂頁面番號提取的核心規則表達式規則，儲存後即時生效。",
 		regexSyntaxError: "規則表達式語法無效，請檢查後重試",
 		resetRegex: "恢復預設正則",
+		extensionVersionLabel: "目前擴充功能版本",
+		updateAvailableTitle: (version) => `發現新版本 v${version}`,
+		updateAvailableDesc: "前往 GitHub Release 下載更新。",
+		updateNow: "立即更新",
+		updateAvailableAria: (version) =>
+			`發現新版本 v${version}，在新分頁開啟 GitHub 最新 Release`,
 	},
 	en: {
 		title: "JavRanking Companion",
@@ -283,6 +300,12 @@ export const messages: Record<SupportedLocale, LocaleMessages> = {
 			"Custom regular expression pattern used to extract video codes from web pages.",
 		regexSyntaxError: "Invalid regular expression syntax",
 		resetRegex: "Reset to Default Regex",
+		extensionVersionLabel: "Current extension version",
+		updateAvailableTitle: (version) => `Version ${version} is available`,
+		updateAvailableDesc: "Download the update from GitHub Releases.",
+		updateNow: "Update now",
+		updateAvailableAria: (version) =>
+			`Version ${version} is available. Open the latest GitHub Release in a new tab`,
 	},
 };
 

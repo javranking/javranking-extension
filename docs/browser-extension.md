@@ -452,13 +452,14 @@ Extension 的正常操作只产生：
 - 对 JavRanking static search index 的 GET request；
 - 对允许 cover host 的 image requests；
 - 用户主动点击后，对 JavRanking detail page 的 normal navigation。
+- 每次打开 extension UI 时，对 GitHub public `releases/latest` metadata 的 GET request，仅读取最新版本号。
 
 Page extraction 和 matching 全部在本机完成。不要添加 analytics、telemetry、crash upload、remote logging 或 user identifier。即使未来添加任何数据收集，也必须先更新本 canonical document、privacy copy 和 manifest declarations。
 
 ### Security controls
 
 - Packaged code only；禁止 remote scripts、dynamic import from remote origins 和 `eval`。
-- Extension page CSP 限制 `script-src` 为 self、`connect-src` 为 JavRanking index origin、`img-src` 为 self 和 approved HTTPS cover hosts。
+- Extension page CSP 限制 `script-src` 为 self、`connect-src` 为 JavRanking index origin 和 GitHub public release API、`img-src` 为 self 和 approved HTTPS cover hosts。
 - Validate `schemaVersion`、field types、URL protocol、URL hostname 和 numeric positions before render。
 - 所有 external navigation 添加 `noopener noreferrer`。
 - 不持久化 page candidates、matched results 或 page-derived data。
@@ -525,7 +526,7 @@ One source tree and one manifest should be preferred. Browser-specific release a
 - Installation、update、uninstall、privacy 和 troubleshooting instructions。
 - Changelog with data-contract minimum version when it changes。
 
-The user manually installs updates for unpacked Chromium releases. Extension UI may show its own version and link to the GitHub Releases page, but MVP must not poll GitHub or display update notifications.
+The user manually installs updates for unpacked Chromium releases. Extension settings display the installed version. Each extension UI startup fetches GitHub public `releases/latest` metadata without page-derived data or user identifiers; only a strictly newer stable semantic version displays an accessible upgrade link that opens the latest GitHub Release in a new tab. Failed, malformed or rate-limited checks remain silent and never block scanning or settings.
 
 ## 12. Testing strategy
 
@@ -535,6 +536,7 @@ The user manually installs updates for unpacked Chromium releases. Extension UI 
 - Candidate extraction：multiple codes、duplicates、large text、missing body and truncation。
 - Lookup：confirmed、unconfirmed、ambiguous normalized keys and null codes。
 - Schema validation：supported version、unsupported version、malformed records and invalid URLs。
+- Release update check：stable semantic version comparison、invalid payload、network failure and strictly-newer release handling。
 - Cache manager：cache hit、cache miss、12 小时 soft window 命中免请求、manifest revision 变化触发全量更新、30 天 hard TTL 强制过期、locale 切换时自动清理旧缓存、`QuotaExceededError` 优雅降级内存运行。
 - Ordering：first page occurrence and deterministic ranking appearance order。
 

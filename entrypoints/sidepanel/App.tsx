@@ -21,6 +21,7 @@ import { buildJavRankingUrl } from "../../src/lib/url";
 import { ResultCard } from "./components/ResultCard";
 import { SettingsView } from "./components/SettingsView";
 import { UnmatchedList } from "./components/UnmatchedList";
+import { UpdateNotice } from "../shared/UpdateNotice";
 
 export const App: React.FC = () => {
 	const [locale, setLocale] = useState<SupportedLocale>(() =>
@@ -339,6 +340,7 @@ export const App: React.FC = () => {
 					</button>
 				</div>
 			</header>
+			<UpdateNotice t={t} />
 
 			{truncated && !showSettings && (
 				<div className="popup-alert popup-alert--warning" role="alert">
