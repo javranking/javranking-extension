@@ -1,6 +1,6 @@
 # JavRanking 浏览器扩展
 
-[简体中文](README.md) · [繁體中文](README.zh-TW.md)
+[简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md)
 
 JavRanking 浏览器扩展会在你主动点击浏览器工具栏图标后，识别当前页面中的影片番号，并展示可对应的 JavRanking 榜单资料。
 

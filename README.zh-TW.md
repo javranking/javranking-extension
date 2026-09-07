@@ -1,6 +1,6 @@
 # JavRanking 瀏覽器擴充功能
 
-[简体中文](README.md) · [繁體中文](README.zh-TW.md)
+[简体中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md)
 
 JavRanking 瀏覽器擴充功能會在你主動點擊瀏覽器工具列圖示後，識別目前頁面中的影片番號，並顯示可對應的 JavRanking 榜單資料。
 
