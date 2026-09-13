@@ -5,14 +5,14 @@ describe("buildJavRankingUrl", () => {
 	it("adds utm parameters to root path", () => {
 		const url = buildJavRankingUrl("/zh-hans/");
 		expect(url).toBe(
-			"https://javranking.top/zh-hans/?utm_source=javranking-extension&utm_medium=popup",
+			"https://javranking.cc/zh-hans/?utm_source=javranking-extension&utm_medium=popup",
 		);
 	});
 
 	it("adds utm parameters and optional campaign", () => {
 		const url = buildJavRankingUrl("/zh-hans/", { campaign: "header" });
 		expect(url).toBe(
-			"https://javranking.top/zh-hans/?utm_source=javranking-extension&utm_medium=popup&utm_campaign=header",
+			"https://javranking.cc/zh-hans/?utm_source=javranking-extension&utm_medium=popup&utm_campaign=header",
 		);
 	});
 
@@ -22,14 +22,14 @@ describe("buildJavRankingUrl", () => {
 			campaign: "preview",
 		});
 		expect(url).toBe(
-			"https://javranking.top/zh-hans/videos/123/?utm_source=javranking-extension&utm_medium=popup&utm_campaign=preview#preview",
+			"https://javranking.cc/zh-hans/videos/123/?utm_source=javranking-extension&utm_medium=popup&utm_campaign=preview#preview",
 		);
 	});
 
 	it("handles path without leading slash", () => {
 		const url = buildJavRankingUrl("en/videos/456/");
 		expect(url).toBe(
-			"https://javranking.top/en/videos/456/?utm_source=javranking-extension&utm_medium=popup",
+			"https://javranking.cc/en/videos/456/?utm_source=javranking-extension&utm_medium=popup",
 		);
 	});
 });

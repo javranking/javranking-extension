@@ -12,8 +12,8 @@ interface ResultCardProps {
 }
 
 const APPROVED_HOSTS = [
-	"javranking.top",
-	"static.javranking.top",
+	"javranking.cc",
+	"static.javranking.cc",
 	"c0.jdbstatic.com",
 	"jdbstatic.com",
 ];

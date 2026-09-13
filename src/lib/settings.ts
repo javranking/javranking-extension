@@ -18,7 +18,7 @@ export const LOCALE_STORAGE_KEY = "javranking_user_locale";
 export const DEFAULT_SETTINGS: ExtensionSettings = {
 	missavTemplate: "https://missav.ws/cn/{code}",
 	javbusTemplate: "https://javdb.com/search?q={code}",
-	excludedHosts: ["javranking.top"],
+	excludedHosts: ["javranking.cc"],
 	customRegex: DEFAULT_CODE_REGEX,
 };
 

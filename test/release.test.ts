@@ -8,21 +8,22 @@ import {
 
 describe("release updates", () => {
 	it("compares stable semantic versions", () => {
-		expect(isNewerVersion("v1.0.1")).toBe(true);
+		expect(isNewerVersion("v1.0.2")).toBe(true);
 		expect(isNewerVersion("1.1.0")).toBe(true);
+		expect(isNewerVersion("1.0.1")).toBe(false);
 		expect(isNewerVersion("1.0.0")).toBe(false);
 		expect(isNewerVersion("0.9.9")).toBe(false);
-		expect(isNewerVersion("v1.0.0-beta")).toBe(false);
+		expect(isNewerVersion("v1.0.1-beta")).toBe(false);
 	});
 
 	it("returns a newer latest GitHub release", async () => {
 		const fetchMock = vi.fn().mockResolvedValue({
 			ok: true,
-			json: async () => ({ tag_name: "v1.0.1" }),
+			json: async () => ({ tag_name: "v1.0.2" }),
 		});
 
 		await expect(checkForUpdate(fetchMock)).resolves.toMatchObject({
-			version: "1.0.1",
+			version: "1.0.2",
 		});
 		expect(fetchMock).toHaveBeenCalledWith(
 			LATEST_RELEASE_API_URL,

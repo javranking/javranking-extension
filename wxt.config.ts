@@ -23,10 +23,10 @@ export default defineConfig({
       },
     },
     permissions: ["activeTab", "scripting", "tabs"],
-    host_permissions: ["https://javranking.top/*", "*://*/*"],
+    host_permissions: ["https://javranking.cc/*", "*://*/*"],
     browser_specific_settings: {
       gecko: {
-        id: "extension@javranking.top",
+        id: "extension@javranking.cc",
         data_collection_permissions: {
           required: ["none"],
         },

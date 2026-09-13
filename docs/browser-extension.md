@@ -130,10 +130,10 @@ Rules：
 
 ### URL contract
 
-- Manifest：`https://javranking.top/{locale}/search-index-manifest.json`
-- Index：`https://javranking.top/{locale}/search-index.json`
-- Video detail：`https://javranking.top/{locale}/videos/{videoId}/`
-- Preview intent：`https://javranking.top/{locale}/videos/{videoId}/#preview`
+- Manifest：`https://javranking.cc/{locale}/search-index-manifest.json`
+- Index：`https://javranking.cc/{locale}/search-index.json`
+- Video detail：`https://javranking.cc/{locale}/videos/{videoId}/`
+- Preview intent：`https://javranking.cc/{locale}/videos/{videoId}/#preview`
 
 主站 preview control 需要提供稳定的 `#preview` anchor。打开该 anchor 可以 scroll 或 focus preview section，但不得自动打开 dialog 或开始 playback。用户仍需在主站完成明确的 play action。
 
@@ -232,7 +232,7 @@ Use Manifest V3 with the minimum permissions:
 {
 	"manifest_version": 3,
 	"permissions": ["activeTab", "scripting", "sidePanel", "tabs"],
-	"host_permissions": ["https://javranking.top/*", "*://*/*"],
+	"host_permissions": ["https://javranking.cc/*", "*://*/*"],
 	"background": {
 		"service_worker": "background.js"
 	},
@@ -262,7 +262,7 @@ Rationale：
 - `activeTab` and `tabs` allow querying the active tab and its URL across browser windows from the persistent side panel context.
 - `scripting` and `*://*/*` allow `scripting.executeScript()` to inspect candidate video codes on user-visited web pages from the dockable side panel.
 - `sidePanel` allows hosting the full-height companion interface (mapped to `sidebar_action` in Firefox builds).
-- `https://javranking.top/*` host permission allows fetching JavRanking's static index and revision manifest.
+- `https://javranking.cc/*` host permission allows fetching JavRanking's static index and revision manifest.
 - Do not request `history`, `storage`, `cookies`, `webRequest`, `downloads` or `notifications` in the MVP.
 - 客户端缓存采用 extension origin（`chrome-extension://<id>/`）的 Web Storage API（`window.localStorage`），在 side panel 生命周期内与跨次打开间安全持久化，无需声明 `"storage"` 权限，保持零敏感权限提示。
 - Detail and preview links use ordinary `<a target="_blank" rel="noopener noreferrer">`; opening them does not justify special navigation permissions.
@@ -385,8 +385,8 @@ Cover 仅在 hover/focus 时展现轻微动态模糊与播放器引导图标。C
 
 所有 remote values 用 DOM `textContent` 和 validated attributes 渲染，不使用 `innerHTML`。只接受：
 
-- `https://javranking.top/` 下的 navigation URLs；
-- `https://static.javranking.top/` 与当前明确批准的 cover host 上的 HTTPS images。
+- `https://javranking.cc/` 下的 navigation URLs；
+- `https://static.javranking.cc/` 与当前明确批准的 cover host 上的 HTTPS images。
 
 Current published data 中仍可能存在 third-party cover URLs。MVP 应使用 host allowlist、`referrerpolicy="no-referrer"` 和 fixed-size fallback；privacy 文档必须说明 remote image host 会收到普通 image request。未知 host 一律显示 fallback。
 
@@ -410,7 +410,7 @@ Current published data 中仍可能存在 third-party cover URLs。MVP 应使用
    - **界面语言选择**：提供「界面语言」下拉切换（跟随系统、简体中文、繁體中文、English），选择后即时持久化并无缝刷新当前 UI 与对应静态索引。
    - **排除站点黑名单（Excluded Sites）**：
      - 允许用户手动添加和保存排除站点（输入域名自动规范化，如 `example.com`）。
-     - 默认自动包含 `javranking.top`（同时自动保护所有子域名如 `static.javranking.top`）。
+     - 默认自动包含 `javranking.cc`（同时自动保护所有子域名如 `static.javranking.cc`）。
      - 当用户在黑名单站点中浏览时，扩展自动停止扫描，并在侧边栏显示“站点已排除”状态与快捷管理按钮。
      - 支持在设置页面一键删除或新增排除站点。
    - **番号识别正则表达式（Custom Regex）**：

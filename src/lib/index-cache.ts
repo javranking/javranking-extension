@@ -10,7 +10,7 @@ export const DATA_STORAGE_KEY = "javranking_index_data";
 
 export const SOFT_REVALIDATE_WINDOW_MS = 12 * 60 * 60 * 1000; // 12 hours
 export const HARD_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
-export const DEFAULT_BASE_URL = "https://javranking.top";
+export const DEFAULT_BASE_URL = "https://javranking.cc";
 
 export async function sha256Hex16(text: string): Promise<string> {
 	if (typeof crypto !== "undefined" && crypto.subtle) {

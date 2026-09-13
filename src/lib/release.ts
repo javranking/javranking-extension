@@ -1,4 +1,4 @@
-export const EXTENSION_VERSION = "1.0.0";
+export const EXTENSION_VERSION = "1.0.1";
 export const LATEST_RELEASE_API_URL =
 	"https://api.github.com/repos/aizhimou/javranking-extension/releases/latest";
 export const LATEST_RELEASE_PAGE_URL =

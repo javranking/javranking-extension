@@ -110,17 +110,17 @@ describe("settings", () => {
 
 	describe("domain normalization and host exclusion", () => {
 		it("normalizes domains properly", () => {
-			expect(normalizeDomain("https://javranking.top/zh-hans/")).toBe("javranking.top");
+			expect(normalizeDomain("https://javranking.cc/zh-hans/")).toBe("javranking.cc");
 			expect(normalizeDomain("http://SUB.Example.COM:8080/path?q=1")).toBe("sub.example.com");
 			expect(normalizeDomain("  foo.bar.org  ")).toBe("foo.bar.org");
 		});
 
 		it("correctly identifies excluded hosts and subdomains", () => {
-			const excluded = ["javranking.top", "google.com"];
-			expect(isHostExcluded("https://javranking.top/search", excluded)).toBe(true);
-			expect(isHostExcluded("https://static.javranking.top/cover.jpg", excluded)).toBe(true);
+			const excluded = ["javranking.cc", "google.com"];
+			expect(isHostExcluded("https://javranking.cc/search", excluded)).toBe(true);
+			expect(isHostExcluded("https://static.javranking.cc/cover.jpg", excluded)).toBe(true);
 			expect(isHostExcluded("https://sub.sub.google.com/test", excluded)).toBe(true);
-			expect(isHostExcluded("https://notjavranking.top/", excluded)).toBe(false);
+			expect(isHostExcluded("https://notjavranking.cc/", excluded)).toBe(false);
 			expect(isHostExcluded("https://example.org/", excluded)).toBe(false);
 		});
 	});
@@ -135,13 +135,13 @@ describe("settings", () => {
 
 		it("saves and restores custom regex and excluded hosts", () => {
 			saveSettings({
-				excludedHosts: ["custom-site.org", "javranking.top"],
+				excludedHosts: ["custom-site.org", "javranking.cc"],
 				customRegex: "\\bFC2[-_\\s]+\\d+\\b",
 			});
 
 			const s = getSettings();
 			expect(s.excludedHosts).toContain("custom-site.org");
-			expect(s.excludedHosts).toContain("javranking.top");
+			expect(s.excludedHosts).toContain("javranking.cc");
 			expect(s.customRegex).toBe("\\bFC2[-_\\s]+\\d+\\b");
 
 			resetSettings();

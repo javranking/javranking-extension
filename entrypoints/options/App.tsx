@@ -31,7 +31,7 @@ export const App: React.FC = () => {
 					className="popup-header__home-link"
 					title="JavRanking Home"
 				>
-					javranking.top
+					javranking.cc
 				</a>
 			</header>
 			<UpdateNotice t={t} />

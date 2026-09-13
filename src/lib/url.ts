@@ -3,7 +3,7 @@ export function buildJavRankingUrl(
 	options?: { hash?: string; campaign?: string },
 ): string {
 	const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-	const url = new URL(`https://javranking.top${normalizedPath}`);
+	const url = new URL(`https://javranking.cc${normalizedPath}`);
 	url.searchParams.set("utm_source", "javranking-extension");
 	url.searchParams.set("utm_medium", "popup");
 	if (options?.campaign) {

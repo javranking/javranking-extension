@@ -19,7 +19,7 @@ describe("IndexCacheManager", () => {
 				code: "ABP-123",
 				title: "Sample Video",
 				score: 100,
-				coverUrl: "https://javranking.top/cover.jpg",
+				coverUrl: "https://javranking.cc/cover.jpg",
 				releaseDate: "2024-01-01",
 				actorLinks: [],
 				rankingAppearances: [
@@ -76,7 +76,7 @@ describe("IndexCacheManager", () => {
 		});
 		vi.stubGlobal("fetch", fetchMock);
 
-		const manager = new IndexCacheManager("https://javranking.top");
+		const manager = new IndexCacheManager("https://javranking.cc");
 		const index = await manager.loadIndex("zh-hans");
 
 		expect(index.schemaVersion).toBe(2);
@@ -112,7 +112,7 @@ describe("IndexCacheManager", () => {
 		});
 		vi.stubGlobal("fetch", fetchMock);
 
-		const manager = new IndexCacheManager("https://javranking.top");
+		const manager = new IndexCacheManager("https://javranking.cc");
 		const index = await manager.loadIndex("zh-hans");
 
 		expect(index.schemaVersion).toBe(2);
@@ -137,7 +137,7 @@ describe("IndexCacheManager", () => {
 			lastCheckedAt: now - 1000,
 		});
 
-		const manager = new IndexCacheManager("https://javranking.top");
+		const manager = new IndexCacheManager("https://javranking.cc");
 		const index = await manager.loadIndex("zh-hans");
 
 		expect(index.videos[0]?.code).toBe("ABP-123");
@@ -174,13 +174,13 @@ describe("IndexCacheManager", () => {
 			lastCheckedAt: oldCheck,
 		});
 
-		const manager = new IndexCacheManager("https://javranking.top");
+		const manager = new IndexCacheManager("https://javranking.cc");
 		const index = await manager.loadIndex("zh-hans");
 
 		expect(index.videos[0]?.code).toBe("ABP-123");
 		// Background manifest fetch was initiated
 		expect(fetchMock).toHaveBeenCalledWith(
-			"https://javranking.top/zh-hans/search-index-manifest.json",
+			"https://javranking.cc/zh-hans/search-index-manifest.json",
 		);
 	});
 
@@ -214,7 +214,7 @@ describe("IndexCacheManager", () => {
 			lastCheckedAt: expiredTime,
 		});
 
-		const manager = new IndexCacheManager("https://javranking.top");
+		const manager = new IndexCacheManager("https://javranking.cc");
 		const index = await manager.loadIndex("zh-hans");
 
 		expect(index.schemaVersion).toBe(2);
@@ -250,7 +250,7 @@ describe("IndexCacheManager", () => {
 			lastCheckedAt: now,
 		});
 
-		const manager = new IndexCacheManager("https://javranking.top");
+		const manager = new IndexCacheManager("https://javranking.cc");
 		await manager.loadIndex("en");
 
 		const newMeta = JSON.parse(storageMock[META_STORAGE_KEY] || "{}");
@@ -304,7 +304,7 @@ describe("IndexCacheManager", () => {
 			lastCheckedAt: now - 1000,
 		});
 
-		const manager = new IndexCacheManager("https://javranking.top");
+		const manager = new IndexCacheManager("https://javranking.cc");
 		const index = await manager.loadIndex("zh-hans");
 
 		// Should have purged old cache and fetched fresh index
