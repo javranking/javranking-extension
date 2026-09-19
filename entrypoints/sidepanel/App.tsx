@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { getChongCode, syncWithCloud } from "../../src/lib/chong-store";
 import { extractCandidatesInTab } from "../../src/lib/extract-codes";
 import { IndexCacheManager } from "../../src/lib/index-cache";
 import { messages } from "../../src/lib/locales";
@@ -51,8 +52,25 @@ export const App: React.FC = () => {
 	const [topRatedCount, setTopRatedCount] = useState(10);
 	const [luckyPool, setLuckyPool] = useState<SearchVideo[]>([]);
 	const [luckyCount, setLuckyCount] = useState(10);
+	const [isSyncing, setIsSyncing] = useState(false);
 
 	const cacheManager = React.useMemo(() => new IndexCacheManager(), []);
+
+	const syncMarks = React.useCallback(async () => {
+		if (!getChongCode()) return;
+		try {
+			setIsSyncing(true);
+			await syncWithCloud();
+		} catch (err) {
+			console.warn("Cloud sync failed:", err);
+		} finally {
+			setIsSyncing(false);
+		}
+	}, []);
+
+	const handleRefresh = async () => {
+		await Promise.allSettled([runScan(), syncMarks()]);
+	};
 
 	const runScan = async () => {
 		setStatus("loading");
@@ -236,12 +254,14 @@ export const App: React.FC = () => {
 		}
 
 		runScan();
+		syncMarks();
 
 		const handleTabActivated = () => {
 			// If bound to a specific tab, do not re-scan when switching to other tabs
 			if (!boundTabId) {
 				runScan();
 			}
+			syncMarks();
 		};
 
 		const handleTabUpdated = (
@@ -253,8 +273,27 @@ export const App: React.FC = () => {
 				changeInfo.status === "complete"
 			) {
 				runScan();
+				syncMarks();
 			}
 		};
+
+		let lastFocusSync = 0;
+		const handleWindowFocus = () => {
+			const now = Date.now();
+			// Auto sync if user returns to side panel and it's been more than 3 seconds
+			if (now - lastFocusSync > 3000) {
+				lastFocusSync = now;
+				syncMarks();
+			}
+		};
+
+		window.addEventListener("focus", handleWindowFocus);
+		const handleVisibilityChange = () => {
+			if (document.visibilityState === "visible") {
+				handleWindowFocus();
+			}
+		};
+		document.addEventListener("visibilitychange", handleVisibilityChange);
 
 		if (typeof browser !== "undefined" && browser.tabs) {
 			browser.tabs.onActivated?.addListener(handleTabActivated);
@@ -269,12 +308,15 @@ export const App: React.FC = () => {
 					// Ignore
 				}
 			}
+			window.removeEventListener("focus", handleWindowFocus);
+			document.removeEventListener("visibilitychange", handleVisibilityChange);
 			if (typeof browser !== "undefined" && browser.tabs) {
 				browser.tabs.onActivated?.removeListener(handleTabActivated);
 				browser.tabs.onUpdated?.removeListener(handleTabUpdated);
 			}
 		};
-	}, [locale, boundTabId]);
+	}, [locale, boundTabId, syncMarks]);
+
 
 	const topRatedVideos = React.useMemo(() => {
 		return [...indexVideos].sort(
@@ -334,18 +376,19 @@ export const App: React.FC = () => {
 					<button
 						type="button"
 						className="popup-header__icon-btn"
-						onClick={() => runScan()}
+						onClick={handleRefresh}
 						title={
 							locale === "zh-hans"
-								? "重新扫描页面"
+								? "重新扫描页面与同步标记"
 								: locale === "zh-hant"
-									? "重新掃描頁面"
-									: "Rescan Page"
+									? "重新掃描頁面與同步標記"
+									: "Rescan Page & Sync Marks"
 						}
 						aria-label="Rescan"
 					>
 						<svg
-							className={`icon-refresh ${status === "loading" ? "icon-refresh--spinning" : ""}`}
+							className={`icon-refresh ${status === "loading" || isSyncing ? "icon-refresh--spinning" : ""}`}
+
 							viewBox="0 0 20 20"
 							fill="currentColor"
 							width="16"

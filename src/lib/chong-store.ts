@@ -88,16 +88,35 @@ function notifyChange(videoCode?: string, status?: MarkStatus) {
 		// CustomEvent may not be available in non-DOM contexts
 	}
 
-	// If chongCode is bound, auto sync with 1.5s debounce
+	// If chongCode is bound, auto sync with 300ms debounce
 	if (state.chongCode) {
 		if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
 		syncDebounceTimer = setTimeout(() => {
+			syncDebounceTimer = null;
 			syncWithCloud().catch((err) => {
 				console.warn("Auto sync failed:", err);
 			});
-		}, 1500);
+		}, 300);
 	}
 }
+
+// Flush pending sync when page/panel hides or unloads
+if (typeof window !== "undefined") {
+	const flushPendingSync = () => {
+		if (syncDebounceTimer) {
+			clearTimeout(syncDebounceTimer);
+			syncDebounceTimer = null;
+			syncWithCloud().catch(() => {});
+		}
+	};
+	window.addEventListener("pagehide", flushPendingSync);
+	document.addEventListener("visibilitychange", () => {
+		if (document.visibilityState === "hidden") {
+			flushPendingSync();
+		}
+	});
+}
+
 
 /**
  * Normalizes Chong Code to lower-case alphanumeric
@@ -304,6 +323,8 @@ export async function createChongCodeOnServer(customCode?: string): Promise<{
 	}
 }
 
+let inFlightSync: Promise<{ success: boolean; error?: string; count?: number }> | null = null;
+
 /**
  * Perform incremental bidirectional sync with Cloudflare D1
  */
@@ -312,79 +333,90 @@ export async function syncWithCloud(): Promise<{
 	error?: string;
 	count?: number;
 }> {
-	const state = loadState();
-	if (!state.chongCode) {
-		return { success: false, error: "未绑定冲码" };
-	}
+	if (inFlightSync) return inFlightSync;
 
-	const changes = Object.values(state.marks).map((m) => ({
-		videoCode: m.videoCode,
-		status: m.status,
-		markedAt: m.markedAt,
-	}));
-
-	try {
-		const res = await fetch(
-			`${API_BASE}/api/chong-code/${encodeURIComponent(state.chongCode)}/sync`,
-			{
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					since: state.lastSyncedAt || 0,
-					changes,
-				}),
-			},
-		);
-
-		if (!res.ok) {
-			const err = await res.json().catch(() => ({ error: "网络同步失败" }));
-			return {
-				success: false,
-				error: (err as { error?: string }).error || `状态码 ${res.status}`,
-			};
+	inFlightSync = (async () => {
+		const state = loadState();
+		if (!state.chongCode) {
+			return { success: false, error: "未绑定冲码" };
 		}
 
-		const data = (await res.json()) as {
-			code: string;
-			syncedAt: number;
-			items: Array<{ videoCode: string; status: MarkStatus; markedAt: number }>;
-		};
+		const changes = Object.values(state.marks).map((m) => ({
+			videoCode: m.videoCode,
+			status: m.status,
+			markedAt: m.markedAt,
+		}));
 
-		// Merge remote changes (Last-Write-Wins)
-		for (const item of data.items || []) {
-			const local = state.marks[item.videoCode];
-			if (!local || item.markedAt >= local.markedAt) {
-				state.marks[item.videoCode] = {
-					videoCode: item.videoCode,
-					status: item.status,
-					markedAt: item.markedAt,
-					title: local?.title,
-					coverUrl: local?.coverUrl,
+		try {
+			const res = await fetch(
+				`${API_BASE}/api/chong-code/${encodeURIComponent(state.chongCode)}/sync`,
+				{
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					keepalive: true,
+					body: JSON.stringify({
+						since: Math.max(0, (state.lastSyncedAt || 0) - 30),
+						changes,
+					}),
+				},
+			);
+
+			if (!res.ok) {
+				const err = await res.json().catch(() => ({ error: "网络同步失败" }));
+				return {
+					success: false,
+					error: (err as { error?: string }).error || `状态码 ${res.status}`,
 				};
 			}
-		}
 
-		state.lastSyncedAt = data.syncedAt;
-		saveState(state);
+			const data = (await res.json()) as {
+				code: string;
+				syncedAt: number;
+				items: Array<{ videoCode: string; status: MarkStatus; markedAt: number }>;
+			};
 
-		if (typeof window !== "undefined") {
-			try {
-				window.dispatchEvent(
-					new CustomEvent("chong:synced", {
-						detail: { syncedAt: data.syncedAt },
-					}),
-				);
-			} catch {
-				// Ignore
+			// Merge remote changes (Last-Write-Wins)
+			for (const item of data.items || []) {
+				const vCode = item.videoCode.trim().toUpperCase();
+				const local = state.marks[vCode];
+				if (!local || item.markedAt >= local.markedAt) {
+					state.marks[vCode] = {
+						videoCode: vCode,
+						status: item.status,
+						markedAt: item.markedAt,
+						title: local?.title,
+						coverUrl: local?.coverUrl,
+					};
+				}
 			}
-		}
 
-		return { success: true, count: Object.keys(state.marks).length };
-	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
-		return { success: false, error: message };
-	}
+			state.lastSyncedAt = data.syncedAt;
+			saveState(state);
+
+			if (typeof window !== "undefined") {
+				try {
+					window.dispatchEvent(
+						new CustomEvent("chong:synced", {
+							detail: { syncedAt: data.syncedAt },
+						}),
+					);
+				} catch {
+					// Ignore
+				}
+			}
+
+			return { success: true, count: Object.keys(state.marks).length };
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			return { success: false, error: message };
+		} finally {
+			inFlightSync = null;
+		}
+	})();
+
+	return inFlightSync;
 }
+
 
 /**
  * Validate, bind existing Chong Code and perform initial sync
