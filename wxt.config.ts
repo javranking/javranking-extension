@@ -22,7 +22,7 @@ export default defineConfig({
         128: "icons/icon-128.png",
       },
     },
-    permissions: ["activeTab", "scripting", "tabs"],
+    permissions: ["activeTab", "scripting", "sidePanel", "tabs"],
     host_permissions: ["https://javranking.cc/*", "*://*/*"],
     browser_specific_settings: {
       gecko: {

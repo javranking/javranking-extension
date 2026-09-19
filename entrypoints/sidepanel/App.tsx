@@ -29,6 +29,12 @@ export const App: React.FC = () => {
 	);
 	const t = messages[locale];
 
+	const boundTabId = React.useMemo(() => {
+		if (typeof window === "undefined" || !window.location) return null;
+		const val = new URLSearchParams(window.location.search).get("tabId");
+		return val ? parseInt(val, 10) : null;
+	}, []);
+
 	const [status, setStatus] = useState<PopupStatus>("loading");
 	const [showSettings, setShowSettings] = useState(false);
 	const [candidateCount, setCandidateCount] = useState(0);
@@ -68,18 +74,28 @@ export const App: React.FC = () => {
 			const extractionPromise = (async (): Promise<
 				ExtractionResult & { excluded?: boolean }
 			> => {
-				// Query active tab in the browser window
-				let tabs = await browser.tabs.query({
-					active: true,
-					lastFocusedWindow: true,
-				});
-				if (!tabs || tabs.length === 0) {
-					tabs = await browser.tabs.query({
-						active: true,
-						currentWindow: true,
-					});
+				let activeTab: { id?: number; url?: string } | undefined;
+				if (boundTabId) {
+					try {
+						activeTab = await browser.tabs.get(boundTabId);
+					} catch {
+						// Bound tab might have closed or cannot be retrieved
+					}
 				}
-				const activeTab = tabs && tabs.length > 0 ? tabs[0] : undefined;
+				if (!activeTab) {
+					// Query active tab in the browser window
+					let tabs = await browser.tabs.query({
+						active: true,
+						lastFocusedWindow: true,
+					});
+					if (!tabs || tabs.length === 0) {
+						tabs = await browser.tabs.query({
+							active: true,
+							currentWindow: true,
+						});
+					}
+					activeTab = tabs && tabs.length > 0 ? tabs[0] : undefined;
+				}
 				if (!activeTab || !activeTab.id) {
 					return { candidates: [], truncated: false, unsupported: true };
 				}
@@ -205,17 +221,37 @@ export const App: React.FC = () => {
 	};
 
 	useEffect(() => {
+		// Keep port open to notify background of sidepanel lifecycle for this tab
+		let port: ReturnType<typeof browser.runtime.connect> | undefined;
+		if (
+			boundTabId &&
+			typeof browser !== "undefined" &&
+			browser.runtime?.connect
+		) {
+			try {
+				port = browser.runtime.connect({ name: `sidepanel:${boundTabId}` });
+			} catch {
+				// Ignore port connection errors
+			}
+		}
+
 		runScan();
 
 		const handleTabActivated = () => {
-			runScan();
+			// If bound to a specific tab, do not re-scan when switching to other tabs
+			if (!boundTabId) {
+				runScan();
+			}
 		};
 
 		const handleTabUpdated = (
-			_tabId: number,
+			tabId: number,
 			changeInfo: { status?: string },
 		) => {
-			if (changeInfo.status === "complete") {
+			if (
+				(!boundTabId || tabId === boundTabId) &&
+				changeInfo.status === "complete"
+			) {
 				runScan();
 			}
 		};
@@ -226,12 +262,19 @@ export const App: React.FC = () => {
 		}
 
 		return () => {
+			if (port) {
+				try {
+					port.disconnect();
+				} catch {
+					// Ignore
+				}
+			}
 			if (typeof browser !== "undefined" && browser.tabs) {
 				browser.tabs.onActivated?.removeListener(handleTabActivated);
 				browser.tabs.onUpdated?.removeListener(handleTabUpdated);
 			}
 		};
-	}, [locale]);
+	}, [locale, boundTabId]);
 
 	const topRatedVideos = React.useMemo(() => {
 		return [...indexVideos].sort(
