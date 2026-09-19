@@ -69,6 +69,32 @@ export interface LocaleMessages {
 	updateAvailableDesc: string;
 	updateNow: string;
 	updateAvailableAria: (version: string) => string;
+	markDone: string;
+	markWish: string;
+	markDoneTitle: string;
+	markWishTitle: string;
+	myMarks: string;
+	chongCode: string;
+	chongCodeSectionTitle: string;
+	chongCodeSectionDesc: string;
+	bindChongCode: string;
+	createChongCode: string;
+	unbindChongCode: string;
+	copyCode: string;
+	copied: string;
+	syncNow: string;
+	syncing: string;
+	syncSuccess: string;
+	syncFailed: string;
+	notBound: string;
+	boundCodeNotice: string;
+	enterChongCodePlaceholder: string;
+	chongCodeHint: string;
+	viewOnMainSite: string;
+	viewMyMarksTooltip: string;
+	marksCountSummary: (total: number, done: number, wish: number) => string;
+	localMarksCount: (total: number) => string;
+	orDivider: string;
 }
 
 export const messages: Record<SupportedLocale, LocaleMessages> = {
@@ -148,7 +174,37 @@ export const messages: Record<SupportedLocale, LocaleMessages> = {
 		updateNow: "立即更新",
 		updateAvailableAria: (version) =>
 			`发现新版本 v${version}，在新标签页打开 GitHub 最新 Release`,
+		markDone: "已冲",
+		markWish: "待冲",
+		markDoneTitle: "标记为已冲 (再次点击取消)",
+		markWishTitle: "加入待冲清单 (再次点击取消)",
+		myMarks: "我的清单",
+		chongCode: "冲码",
+		chongCodeSectionTitle: "冲码与多端同步",
+		chongCodeSectionDesc:
+			"无须账号密码，使用【冲码】可在电脑与手机间实时双向同步已冲/待冲清单。",
+		bindChongCode: "绑定冲码",
+		createChongCode: "生成随机冲码",
+		unbindChongCode: "解绑",
+		copyCode: "复制",
+		copied: "已复制！",
+		syncNow: "立即同步",
+		syncing: "同步中...",
+		syncSuccess: "同步成功",
+		syncFailed: "同步失败",
+		notBound: "未绑定冲码 (仅保存在本地)",
+		boundCodeNotice: "已绑定冲码，打标数据会自动在多个设备间同步。",
+		enterChongCodePlaceholder: "输入 6-16 位字母数字冲码",
+		chongCodeHint: "牢记或复制保存冲码，即可在其他设备直接恢复你的观影清单。",
+		viewOnMainSite: "前往 JavRanking 查看我的清单",
+		viewMyMarksTooltip: "在主站查看我的清单",
+		marksCountSummary: (total, done, wish) =>
+			`${total} 部已标记 (${done} 已冲 · ${wish} 待冲)`,
+		localMarksCount: (total) =>
+			`本地已暂存 ${total} 部影片标记，绑定冲码后即可自动同步。`,
+		orDivider: "或",
 	},
+
 	"zh-hant": {
 		title: "JavRanking 榜單助手",
 		loading: "正在識別與載入...",
@@ -225,7 +281,37 @@ export const messages: Record<SupportedLocale, LocaleMessages> = {
 		updateNow: "立即更新",
 		updateAvailableAria: (version) =>
 			`發現新版本 v${version}，在新分頁開啟 GitHub 最新 Release`,
+		markDone: "已衝",
+		markWish: "待衝",
+		markDoneTitle: "標記為已衝 (再次點擊取消)",
+		markWishTitle: "加入待衝清單 (再次點擊取消)",
+		myMarks: "我的清單",
+		chongCode: "衝碼",
+		chongCodeSectionTitle: "衝碼與多端同步",
+		chongCodeSectionDesc:
+			"無需帳號密碼，使用【衝碼】可在電腦與手機間即時雙向同步已衝/待衝清單。",
+		bindChongCode: "綁定衝碼",
+		createChongCode: "生成隨機衝碼",
+		unbindChongCode: "解綁",
+		copyCode: "複製",
+		copied: "已複製！",
+		syncNow: "立即同步",
+		syncing: "同步中...",
+		syncSuccess: "同步成功",
+		syncFailed: "同步失敗",
+		notBound: "未綁定衝碼 (僅保存在本地)",
+		boundCodeNotice: "已綁定衝碼，打標數據會自動在多個設備間同步。",
+		enterChongCodePlaceholder: "輸入 6-16 位字母數字衝碼",
+		chongCodeHint: "牢記或複製保存衝碼，即可在其他設備直接恢復你的觀影清單。",
+		viewOnMainSite: "前往 JavRanking 查看我的清單",
+		viewMyMarksTooltip: "在主站查看我的清單",
+		marksCountSummary: (total, done, wish) =>
+			`${total} 部已標記 (${done} 已衝 · ${wish} 想看)`,
+		localMarksCount: (total) =>
+			`本地已暫存 ${total} 部影片標記，綁定衝碼後即可自動同步。`,
+		orDivider: "或",
 	},
+
 	en: {
 		title: "JavRanking Companion",
 		loading: "Scanning and loading...",
@@ -306,7 +392,38 @@ export const messages: Record<SupportedLocale, LocaleMessages> = {
 		updateNow: "Update now",
 		updateAvailableAria: (version) =>
 			`Version ${version} is available. Open the latest GitHub Release in a new tab`,
+		markDone: "Watched",
+		markWish: "Want",
+		markDoneTitle: "Mark as Watched (click again to unmark)",
+		markWishTitle: "Add to Watchlist (click again to unmark)",
+		myMarks: "My List",
+		chongCode: "Chong Code",
+		chongCodeSectionTitle: "Chong Code & Cloud Sync",
+		chongCodeSectionDesc:
+			"No login or password needed. Use Chong Code to sync your watched and want lists across all devices.",
+		bindChongCode: "Bind Chong Code",
+		createChongCode: "Generate Code",
+		unbindChongCode: "Unbind",
+		copyCode: "Copy",
+		copied: "Copied!",
+		syncNow: "Sync Now",
+		syncing: "Syncing...",
+		syncSuccess: "Synced",
+		syncFailed: "Sync failed",
+		notBound: "Not bound (saved locally only)",
+		boundCodeNotice: "Chong Code bound. Your marks are synced across devices.",
+		enterChongCodePlaceholder: "Enter 6-16 alphanumeric code",
+		chongCodeHint:
+			"Save this code to restore your list anytime on mobile or other browsers.",
+		viewOnMainSite: "View My List on JavRanking",
+		viewMyMarksTooltip: "View My List on main site",
+		marksCountSummary: (total, done, wish) =>
+			`${total} marked (${done} Watched · ${wish} Want)`,
+		localMarksCount: (total) =>
+			`${total} film${total > 1 ? "s" : ""} marked locally. Bind a Chong Code to sync.`,
+		orDivider: "or",
 	},
+
 };
 
 export function detectLocale(): SupportedLocale {

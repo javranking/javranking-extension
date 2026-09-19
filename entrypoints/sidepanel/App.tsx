@@ -359,6 +359,25 @@ export const App: React.FC = () => {
 							/>
 						</svg>
 					</button>
+					<a
+						href={buildJavRankingUrl(`/${locale}/marks`)}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="popup-header__icon-link"
+						title={t.viewMyMarksTooltip}
+						aria-label={t.viewMyMarksTooltip}
+					>
+						<svg
+							className="icon-bookmark"
+							viewBox="0 0 16 16"
+							fill="currentColor"
+							width="15"
+							height="15"
+							aria-hidden="true"
+						>
+							<path d="M3 2.75C3 1.784 3.784 1 4.75 1h6.5c.966 0 1.75.784 1.75 1.75v11.5a.75.75 0 0 1-1.218.584L8 12.047l-3.782 2.787A.75.75 0 0 1 3 14.25V2.75Z" />
+						</svg>
+					</a>
 					<button
 						type="button"
 						className={`popup-header__icon-btn ${showSettings ? "popup-header__icon-btn--active" : ""}`}
@@ -406,6 +425,7 @@ export const App: React.FC = () => {
 			<main className="popup-main">
 				{showSettings ? (
 					<SettingsView
+						locale={locale}
 						t={t}
 						onBack={() => {
 							setShowSettings(false);
@@ -413,6 +433,7 @@ export const App: React.FC = () => {
 						}}
 						onLocaleChange={(newLocale) => setLocale(newLocale)}
 					/>
+
 				) : (
 					<>
 						{status === "loading" && (

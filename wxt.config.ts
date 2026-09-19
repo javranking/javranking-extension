@@ -23,7 +23,11 @@ export default defineConfig({
       },
     },
     permissions: ["activeTab", "scripting", "sidePanel", "tabs"],
-    host_permissions: ["https://javranking.cc/*", "*://*/*"],
+    host_permissions: [
+      "https://javranking.cc/*",
+      "https://api.javranking.cc/*",
+      "*://*/*"
+    ],
     browser_specific_settings: {
       gecko: {
         id: "extension@javranking.cc",

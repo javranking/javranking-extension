@@ -216,6 +216,7 @@ extension/
 │       ├── extract-codes.ts
 │       ├── locate-code.ts
 │       ├── index-cache.ts
+│       ├── chong-store.ts
 │       ├── locales.ts
 │       ├── settings.ts
 │       └── url.ts
@@ -232,7 +233,7 @@ Use Manifest V3 with the minimum permissions:
 {
 	"manifest_version": 3,
 	"permissions": ["activeTab", "scripting", "sidePanel", "tabs"],
-	"host_permissions": ["https://javranking.cc/*", "*://*/*"],
+	"host_permissions": ["https://javranking.cc/*", "https://api.javranking.cc/*", "*://*/*"],
 	"background": {
 		"service_worker": "background.js"
 	},
@@ -263,6 +264,7 @@ Rationale：
 - `scripting` and `*://*/*` allow `scripting.executeScript()` to inspect candidate video codes on user-visited web pages from the dockable side panel.
 - `sidePanel` allows hosting the full-height companion interface (mapped to `sidebar_action` in Firefox builds).
 - `https://javranking.cc/*` host permission allows fetching JavRanking's static index and revision manifest.
+- `https://api.javranking.cc/*` host permission allows incremental bidirectional synchronization of Chong Code and watched/want video marks with the Cloudflare D1 worker.
 - Do not request `history`, `storage`, `cookies`, `webRequest`, `downloads` or `notifications` in the MVP.
 - 客户端缓存采用 extension origin（`chrome-extension://<id>/`）的 Web Storage API（`window.localStorage`），在 side panel 生命周期内与跨次打开间安全持久化，无需声明 `"storage"` 权限，保持零敏感权限提示。
 - Detail and preview links use ordinary `<a target="_blank" rel="noopener noreferrer">`; opening them does not justify special navigation permissions.
@@ -339,7 +341,7 @@ Use a single scrollable side panel for all supported browsers. Target approximat
 ### Header & Navigation
 
 - **左侧 Logo 链接**：左上角放置 JavRanking 品牌 Logo 图片，点击在新标签页打开 JavRanking 主站首页，携带 `utm_source=javranking-extension&utm_medium=extension&utm_campaign=header_logo` 统计参数。
-- **右侧快捷操作**：保持极简干净，仅保留「重新扫描」（🔄）与「设置」（⚙️）两个图标按钮；不放置冗余文字链接或语言角标。
+- **右侧快捷操作**：保持极简干净，保留「重新扫描」（🔄）、「我的清单」（🔖，在新标签页直达 JavRanking `/marks/` 个人清单页）与「设置」（⚙️）三个图标按钮；不放置冗余文字链接或语言角标。
 
 ### States
 
@@ -358,9 +360,10 @@ Use a single scrollable side panel for all supported browsers. Target approximat
 1. **Top Hero 区（左右并排）**：
    - **左侧 3:2 横版海报**：保持原始 3:2 比例不裁切；左上角固定展示放大 1.5 倍的全站排名深金角标（白字 `总榜 #{rank}`），文字可读性强、对比醒目；光标悬停在 Top Hero 区域时海报轻度模糊并居中浮现金色播放器图标，吸引点击直达 JavRanking 详情页；加载失败或缺失时显示固定尺寸 fallback。
    - **右侧元数据区**：
-     - 首行：番号与「定位」按钮（如 `IPTD-598  [定位]`）。布局简洁宽裕，点击定位按钮可在当前网页中高亮该番号并循环跳转，同时阻断卡片跳转；卡片其余部分依然保持点击直达 JavRanking 详情页。推荐神作卡片不显示定位按钮。
+     - 首行：番号、打标按钮（「已冲」与「待冲」一键切换按钮，与主站设计语言一致）以及「定位」按钮。布局紧凑清晰，打标操作可直接在扩展内完成并本地持久化与云同步；点击定位按钮可在当前网页中高亮该番号并平滑滚动定位。推荐神作卡片不显示定位按钮。
      - 次行：参演人员（带性别标识，如 `♀` / `♂`），字号与视觉权重高于影片标题，突出核心主演。
      - 标题：最多两行截断（Line clamp 2），次级文本样式。
+
 2. **底部上榜信息区（Rankings list）**：
    - 细线分隔，直接列出该影片上榜的具体分类榜单及名次（如 `#124 JAVDB TOP250 2022`，智能去除冗余年份重复）。
    - 仅在影片拥有具体分类榜单时呈现该区域；全站总排名统一在左侧海报金色角标中高亮突出，避免在列表中冗余重复。
@@ -416,14 +419,19 @@ Current published data 中仍可能存在 third-party cover URLs。MVP 应使用
    - **番号识别正则表达式（Custom Regex）**：
      - 开放页面番号匹配的核心正则表达式供用户自定义编辑。
      - 实时进行正则表达式语法校验，阻止非法语法保存；提供「恢复默认正则」按钮一键还原为官方默认规则 `\b[A-Za-z]{3,6}[-—–\s]+\d{3,6}\b`。
+   - **冲码与多端同步（Chong Code）**：
+     - 扩展设置内集成完整的冲码绑定与同步卡片，展示当前绑定的冲码，提供一键复制、手动触发双向同步与解绑功能。
+     - 未绑定时支持一键自动生成 8 位随机冲码，或输入已有 6-16 位字母数字冲码进行验证并绑定。
+     - 展示本地与云端已标记影片统计（总计、已冲、待冲），并提供直达 JavRanking 主站「我的清单」快捷入口。
    - **外部跳转规则**：支持自定义 **MissAV** 与 **JavDB/JavBus** 的链接模板。
      - 默认链接模板：MissAV 为 `https://missav.ws/cn/{code}`；JavDB/JavBus 为 `https://javdb.com/search?q={code}`。
      - 模板支持 `{code}`、`{番号}`、`{ID}` 占位符；若未提供占位符，则自动将番号追加到 URL 末尾。
      - 提供即时动态 URL 预览（以 `ABP-123` 示例展示实际跳转结果）。
    - **保存与重置**：提供“保存设置”与“恢复默认”操作，保存时展示即时反馈；退出设置时自动使用最新配置重新扫描页面。
 2. **存储契约**：
-   - 配置值永久存储于客户端 `localStorage` 中（设置 key 为 `javranking_search_settings`，语言 key 为 `javranking_user_locale`），永不过期（无 TTL 限制）。
+   - 配置值永久存储于客户端 `localStorage` 中（设置 key 为 `javranking_search_settings`，语言 key 为 `javranking_user_locale`，冲码与标记 key 为 `javranking_chong_store_v1`），永不过期（无 TTL 限制）。
    - 读取失败或用户清空时自动降级为默认官方配置与浏览器首选语言。
+
 
 ### Accessibility
 
@@ -453,22 +461,60 @@ Extension 的正常操作只产生：
 - 对允许 cover host 的 image requests；
 - 用户主动点击后，对 JavRanking detail page 的 normal navigation。
 - 每次打开 extension UI 时，对 GitHub public `releases/latest` metadata 的 GET request，仅读取最新版本号。
+- 用户绑定冲码后，打标变动时由客户端发起的 1.5 秒防抖增量同步请求（POST 至 `https://api.javranking.cc/api/chong-code/{code}/sync`）及冲码有效性校验与生成请求。
 
 Page extraction 和 matching 全部在本机完成。不要添加 analytics、telemetry、crash upload、remote logging 或 user identifier。即使未来添加任何数据收集，也必须先更新本 canonical document、privacy copy 和 manifest declarations。
 
 ### Security controls
 
 - Packaged code only；禁止 remote scripts、dynamic import from remote origins 和 `eval`。
-- Extension page CSP 限制 `script-src` 为 self、`connect-src` 为 JavRanking index origin 和 GitHub public release API、`img-src` 为 self 和 approved HTTPS cover hosts。
+- Extension page CSP 限制 `script-src` 为 self、`connect-src` 为 JavRanking index origin、Cloudflare Worker API origin (`https://api.javranking.cc`) 和 GitHub public release API、`img-src` 为 self 和 approved HTTPS cover hosts。
 - Validate `schemaVersion`、field types、URL protocol、URL hostname 和 numeric positions before render。
 - 所有 external navigation 添加 `noopener noreferrer`。
 - 不持久化 page candidates、matched results 或 page-derived data。
 - 不把 page-derived content拼入 network URL、query string、request body 或 logs。
 - GitHub release 不包含 source maps、database、logs、cookies 或 environment files。
 
-## 10. Performance and resilience
+## 10. Video marking and Chong Code cloud sync
+
+为满足用户在浏览第三方网页时即时标记已看、想看影片，并使观影记录无缝漫游至手机或电脑端主站的需求，Extension 与 JavRanking 主站共享一套无密码、匿名的「冲码」同步协议：
+
+### 客户端存储契约
+- **Storage Key**：`javranking_chong_store_v1`（与主站保持一致）。
+- **数据结构**：
+  ```ts
+  interface ChongStoreState {
+  	chongCode: string | null;
+  	lastSyncedAt: number;
+  	marks: Record<string, {
+  		videoCode: string;
+  		status: "done" | "wish" | "none";
+  		markedAt: number;
+  		title?: string;
+  		coverUrl?: string;
+  	}>;
+  }
+  ```
+- **离线优先（Offline-First）**：用户在识别卡片或推荐神作卡片上点击「已冲」或「待冲」按钮，标记状态立刻保存在扩展本地 `localStorage`，无网络连接或未绑定冲码时均可完整离线运作。
+
+### 云端同步机制
+- **服务端架构**：基于 Cloudflare Workers 与 D1 数据库构建（`https://api.javranking.cc`）。
+- **冲突解决策略**：采用 Last-Write-Wins (LWW) 规则，以本地与云端各记录的 `markedAt` 秒级 Unix 时间戳比对，较新记录覆盖较旧记录。当标记被取消时，记录标记为 `none` 墓碑状态同步至云端。
+- **自动与手动同步**：
+  1. 绑定冲码后，用户在卡片上的任何打标操作均以 1.5 秒防抖机制自动提交增量变动至云端；
+  2. 首次绑定已有冲码或自动生成新冲码时，立即执行全量双向合并；
+  3. 用户亦可在扩展设置页面主动点击「立即同步」获取即时反馈。
+
+### 主站清单联动
+- 为避免在紧凑的侧边栏中塞入复杂的长列表与筛选控件，扩展遵循「轻量打标、主站管理」的设计原则：
+  - 侧边栏顶部工具栏提供「我的清单」快捷入口（🔖），点击在新标签页打开 JavRanking 主站对应语言的 `/marks/` 页面；
+  - 扩展设置页面在冲码卡片中提供「前往 JavRanking 查看我的清单」快捷入口；
+  - 主站 `/marks/` 页面拥有完整的作品网格、筛选选项卡（待冲/已冲）、数据导出与多端冲码绑定视图。
+
+## 11. Performance and resilience
 
 The current search index is under 1 MiB uncompressed at the time of this design. Adding ranking appearances must retain a practical static payload：
+
 
 | Item | MVP budget |
 | --- | --- |
@@ -503,7 +549,7 @@ The current search index is under 1 MiB uncompressed at the time of this design.
    - 当 `now - cachedAt > 30 days` 时（例如用户离线超过一个月，或长期未能成功完成联机校验），本地缓存被强制判定为**硬过期且不可信**。
    - Extension 拒绝继续展示超过 30 天未重新校验的陈旧榜单荣誉，强制切入 Loading 状态并重新联机同步；若联机失败，向用户明确展示带重试按钮的网络/数据过期错误，坚决不展示可能已失效的陈旧榜单荣誉。
 
-## 11. Browser compatibility and distribution
+## 12. Browser compatibility and distribution
 
 ### Support matrix
 
@@ -528,7 +574,7 @@ One source tree and one manifest should be preferred. Browser-specific release a
 
 The user manually installs updates for unpacked Chromium releases. Extension settings display the installed version. Each extension UI startup fetches GitHub public `releases/latest` metadata without page-derived data or user identifiers; only a strictly newer stable semantic version displays an accessible upgrade link that opens the latest GitHub Release in a new tab. Failed, malformed or rate-limited checks remain silent and never block scanning or settings.
 
-## 12. Testing strategy
+## 13. Testing strategy
 
 ### Unit tests
 
@@ -538,6 +584,7 @@ The user manually installs updates for unpacked Chromium releases. Extension set
 - Schema validation：supported version、unsupported version、malformed records and invalid URLs。
 - Release update check：stable semantic version comparison、invalid payload、network failure and strictly-newer release handling。
 - Cache manager：cache hit、cache miss、12 小时 soft window 命中免请求、manifest revision 变化触发全量更新、30 天 hard TTL 强制过期、locale 切换时自动清理旧缓存、`QuotaExceededError` 优雅降级内存运行。
+- `chong-store`：冲码规范化与格式校验、本地打标增删改查、统计计数、绑定与解绑、云端合并 Last-Write-Wins 冲突解决。
 - Ordering：first page occurrence and deterministic ranking appearance order。
 
 ### Static data contract tests

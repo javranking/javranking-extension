@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { getMark, toggleMark, type MarkStatus } from "../../../src/lib/chong-store";
 import { locateCodeInActiveTab } from "../../../src/lib/locate-code";
 import type { LocaleMessages } from "../../../src/lib/locales";
 import type { MatchedResult, SupportedLocale } from "../../../src/lib/types";
@@ -49,6 +50,36 @@ export const ResultCard: React.FC<ResultCardProps> = ({
 		total?: number;
 	}>({ status: "idle" });
 
+	const [markStatus, setMarkStatus] = useState<MarkStatus | null>(() => {
+		return video.code ? getMark(video.code) : null;
+	});
+
+	useEffect(() => {
+		if (!video.code) return;
+		setMarkStatus(getMark(video.code));
+
+		const handleChongChange = (e: Event) => {
+			const customEvt = e as CustomEvent<{ videoCode?: string; status?: MarkStatus }>;
+			if (customEvt.detail?.videoCode) {
+				if (customEvt.detail.videoCode.toUpperCase() === video.code?.toUpperCase()) {
+					setMarkStatus(
+						customEvt.detail.status === "none" ? null : customEvt.detail.status || null,
+					);
+				}
+			} else if (video.code) {
+				setMarkStatus(getMark(video.code));
+			}
+
+		};
+
+		window.addEventListener("chong:change", handleChongChange);
+		window.addEventListener("chong:synced", handleChongChange);
+		return () => {
+			window.removeEventListener("chong:change", handleChongChange);
+			window.removeEventListener("chong:synced", handleChongChange);
+		};
+	}, [video.code]);
+
 	const appearances = video.rankingAppearances || [];
 	const visibleAppearances = expanded ? appearances : appearances.slice(0, 3);
 	const hasMore = appearances.length > 3;
@@ -88,6 +119,28 @@ export const ResultCard: React.FC<ResultCardProps> = ({
 			e.preventDefault();
 			window.open(detailUrl, "_blank", "noopener,noreferrer");
 		}
+	};
+
+	const handleToggleDone = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		e.preventDefault();
+		if (!video.code) return;
+		const next = toggleMark(video.code, "done", {
+			title: video.title,
+			coverUrl: video.coverUrl || undefined,
+		});
+		setMarkStatus(next);
+	};
+
+	const handleToggleWish = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		e.preventDefault();
+		if (!video.code) return;
+		const next = toggleMark(video.code, "wish", {
+			title: video.title,
+			coverUrl: video.coverUrl || undefined,
+		});
+		setMarkStatus(next);
 	};
 
 	const handleLocate = async (e: React.MouseEvent) => {
@@ -172,7 +225,55 @@ export const ResultCard: React.FC<ResultCardProps> = ({
 
 				<div className="result-card__meta">
 					<div className="result-card__header-line">
-						<span className="result-card__code">{video.code}</span>
+						<div className="result-card__header-left">
+							<span className="result-card__code">{video.code}</span>
+							<div className="result-card__marks" onClick={(e) => e.stopPropagation()}>
+								<button
+									type="button"
+									className={`result-card__mark-btn result-card__mark-btn--done ${
+										markStatus === "done" ? "result-card__mark-btn--active" : ""
+									}`}
+									onClick={handleToggleDone}
+									title={t.markDoneTitle}
+									aria-label={`${t.markDone}: ${video.code || ""}`}
+									aria-pressed={markStatus === "done"}
+								>
+									<svg
+										className="icon-check"
+										viewBox="0 0 16 16"
+										fill="currentColor"
+										width="10"
+										height="10"
+										aria-hidden="true"
+									>
+										<path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z" />
+									</svg>
+									<span>{t.markDone}</span>
+								</button>
+								<button
+									type="button"
+									className={`result-card__mark-btn result-card__mark-btn--wish ${
+										markStatus === "wish" ? "result-card__mark-btn--active" : ""
+									}`}
+									onClick={handleToggleWish}
+									title={t.markWishTitle}
+									aria-label={`${t.markWish}: ${video.code || ""}`}
+									aria-pressed={markStatus === "wish"}
+								>
+									<svg
+										className="icon-bookmark"
+										viewBox="0 0 16 16"
+										fill="currentColor"
+										width="10"
+										height="10"
+										aria-hidden="true"
+									>
+										<path d="M3 2.75C3 1.784 3.784 1 4.75 1h6.5c.966 0 1.75.784 1.75 1.75v11.5a.75.75 0 0 1-1.218.584L8 12.047l-3.782 2.787A.75.75 0 0 1 3 14.25V2.75Z" />
+									</svg>
+									<span>{t.markWish}</span>
+								</button>
+							</div>
+						</div>
 						{showLocate && (
 							<button
 								type="button"

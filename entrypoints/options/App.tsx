@@ -38,6 +38,7 @@ export const App: React.FC = () => {
 
 			<main className="popup-main">
 				<SettingsView
+					locale={locale}
 					t={t}
 					onBack={() => {
 						if (window.history.length > 1) {
