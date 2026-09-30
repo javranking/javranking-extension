@@ -4,7 +4,7 @@
 
 JavRanking 浏览器扩展会在你主动点击浏览器工具栏图标后，识别当前页面中的影片番号，并展示可对应的 JavRanking 榜单资料。
 
-社区交流：[LINUX DO](https://linux.do/)
+社区交流：[LINUX DO 帖子](https://linux.do/t/topic/2969668) · [V2EX 帖子](https://v2ex.com/t/1239909)
 
 ![screenshot](https://pub-46be2c0b616d4f749dab2ccd9deb9827.r2.dev/social-preview.png)
 
