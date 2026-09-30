@@ -4,6 +4,8 @@
 
 JavRanking 浏览器扩展会在你主动点击浏览器工具栏图标后，识别当前页面中的影片番号，并展示可对应的 JavRanking 榜单资料。
 
+社区交流：[LINUX DO](https://linux.do/)
+
 ![screenshot](https://pub-46be2c0b616d4f749dab2ccd9deb9827.r2.dev/social-preview.png)
 
 ## 安装 Chrome 或 Edge 版本
@@ -33,7 +35,7 @@ production ZIP 会输出到 `.output/`。构建产物不会提交到 Git；你�
 
 ## 隐私
 
-扩展只会在用户主动触发后读取当前顶层页面。它不会传送或保存页面 URL、页面文字、DOM 内容、番号候选或浏览活动。
+扩展只会在用户主动触发后读取当前顶层页面。页面 URL、页面文字、DOM 内容和浏览记录不会上传。绑定冲码后，用户标记的影片番号、标记状态与时间会同步至 JavRanking API。
 
 它会读取 JavRanking 已发布的静态搜索索引来查找匹配项；每次打开扩展 UI 时，还会向 GitHub 公开 API 读取最新 Release 的版本号。两者都不包含任何页面或用户数据。
 
