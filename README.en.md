@@ -8,7 +8,7 @@ The JavRanking browser extension identifies video codes on the active page after
 
 ## Install in Chrome or Edge
 
-1. Download the Chromium ZIP from [GitHub Releases](https://github.com/aizhimou/javranking-extension/releases).
+1. Download the Chromium ZIP from [GitHub Releases](https://github.com/javranking/javranking-extension/releases).
 2. Extract it to a permanent local folder.
 3. Open `chrome://extensions` or `edge://extensions`.
 4. Enable **Developer mode**, choose **Load unpacked**, then select the extracted folder containing `manifest.json`.

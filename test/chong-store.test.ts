@@ -32,7 +32,7 @@ describe("chong-store", () => {
 	});
 
 	it("normalizes chong code correctly", () => {
-		expect(normalizeChongCode("  Asimov88  ")).toBe("asimov88");
+		expect(normalizeChongCode("  JavRanker88  ")).toBe("javranker88");
 		expect(normalizeChongCode("")).toBe("");
 	});
 
@@ -41,7 +41,7 @@ describe("chong-store", () => {
 		expect(isValidChongCode("12345").valid).toBe(false); // < 6
 		expect(isValidChongCode("12345678901234567").valid).toBe(false); // > 16
 		expect(isValidChongCode("abc-123").valid).toBe(false); // special character
-		expect(isValidChongCode("asimov88").valid).toBe(true);
+		expect(isValidChongCode("javranker88").valid).toBe(true);
 		expect(isValidChongCode("K7M2PX89").valid).toBe(true);
 	});
 

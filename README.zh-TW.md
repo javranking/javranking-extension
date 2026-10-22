@@ -8,7 +8,7 @@ JavRanking 瀏覽器擴充功能會在你主動點擊瀏覽器工具列圖示後
 
 ## 安裝 Chrome 或 Edge 版本
 
-1. 從 [GitHub Releases](https://github.com/aizhimou/javranking-extension/releases) 下載 Chromium ZIP。
+1. 從 [GitHub Releases](https://github.com/javranking/javranking-extension/releases) 下載 Chromium ZIP。
 2. 將 ZIP 解壓縮到會保留的本機資料夾。
 3. 開啟 `chrome://extensions` 或 `edge://extensions`。
 4. 開啟 **Developer mode**，選擇 **Load unpacked**，再選取包含 `manifest.json` 的解壓縮資料夾。

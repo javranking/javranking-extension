@@ -1,8 +1,8 @@
 export const EXTENSION_VERSION = "1.1.0";
 export const LATEST_RELEASE_API_URL =
-	"https://api.github.com/repos/aizhimou/javranking-extension/releases/latest";
+	"https://api.github.com/repos/javranking/javranking-extension/releases/latest";
 export const LATEST_RELEASE_PAGE_URL =
-	"https://github.com/aizhimou/javranking-extension/releases/latest";
+	"https://github.com/javranking/javranking-extension/releases/latest";
 
 export interface AvailableUpdate {
 	version: string;
