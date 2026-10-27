@@ -48,7 +48,7 @@ Extension 是主站的 browsing companion，不是独立影片站、通用 metad
 
 主站 search 已经提供 extension 所需的 static delivery path：
 
-1. `frontend/src/pages/[locale]/search-index.json.ts` 在 Astro build 时为三个 locale 生成 `/{locale}/search-index.json`。
+1. `frontend/src/pages/[locale]/search-index.json.ts` 在 Astro build 时为两个 locale (`en` 与 `zh-hans`) 生成 `/{locale}/search-index.json`。
 2. 同步在 `frontend/src/pages/[locale]/search-index-manifest.json.ts` 为各 locale 生成极轻量的 revision manifest（`< 200 B`），供 extension 在常规点击时以极低网络开销核对版本。
 3. Route 调用 `frontend/src/lib/catalog.ts` 的 `getPublishedSearchIndex()`，从 `data/javranking.sqlite` 读取至少出现在一个 published ranking 中的影片。
 4. `frontend/src/pages/[locale]/search.astro` 在 browser 中 fetch static JSON，normalize query 后匹配 `video.code`。
